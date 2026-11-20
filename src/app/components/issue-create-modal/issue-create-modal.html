@@ -1,0 +1,171 @@
+<div class="modal-backdrop" (click)="onBackdropClick($event)" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal-card">
+    <header class="modal-header">
+      <div class="header-title-group">
+        <span class="header-icon">✨</span>
+        <h2 id="modalTitle" class="modal-title">Create New Issue</h2>
+      </div>
+      <button
+        type="button"
+        class="close-btn"
+        (click)="closeModal.emit()"
+        title="Close modal"
+        aria-label="Close modal"
+      >
+        ✕
+      </button>
+    </header>
+
+    @if (ruleError()) {
+      <div class="error-banner" role="alert">
+        <span>⚠️ {{ ruleError() }}</span>
+      </div>
+    }
+
+    <form class="modal-form" (ngSubmit)="onSubmit()">
+      <!-- Title -->
+      <div class="form-group">
+        <div class="label-row">
+          <label for="createTitle" class="form-label">
+            Title <span class="required-star">*</span>
+          </label>
+          <span class="char-count" [class.valid]="isTitleValid()">
+            {{ title().trim().length }}/5 min
+          </span>
+        </div>
+        <input
+          id="createTitle"
+          type="text"
+          class="form-input"
+          [class.input-invalid]="titleTouched() && !isTitleValid()"
+          placeholder="Brief summary of the issue (min 5 characters)"
+          [value]="title()"
+          (input)="title.set($any($event.target).value)"
+          (blur)="titleTouched.set(true)"
+          required
+          minlength="5"
+        />
+        @if (titleTouched() && !isTitleValid()) {
+          <span class="error-text">Title is required and must be at least 5 characters.</span>
+        }
+      </div>
+
+      <!-- Type and Priority Row -->
+      <div class="form-row">
+        <div class="form-group flex-1">
+          <label for="createType" class="form-label">Type</label>
+          <select
+            id="createType"
+            class="form-select"
+            [value]="type()"
+            (change)="type.set($any($event.target).value)"
+          >
+            @for (t of types; track t) {
+              <option [value]="t">{{ t }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="form-group flex-1">
+          <label for="createPriority" class="form-label">Priority</label>
+          <select
+            id="createPriority"
+            class="form-select"
+            [value]="priority()"
+            (change)="priority.set($any($event.target).value)"
+          >
+            @for (p of priorities; track p) {
+              <option [value]="p">{{ p }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <!-- Story Points and Due Date Row -->
+      <div class="form-row">
+        <div class="form-group flex-1">
+          <label for="createStoryPoints" class="form-label">
+            Story Points (BR-4)
+          </label>
+          <select
+            id="createStoryPoints"
+            class="form-select"
+            [value]="storyPoints()"
+            (change)="onStoryPointsSelect($event)"
+          >
+            @for (sp of storyPointsOptions; track sp) {
+              <option [value]="sp">{{ sp }} Points</option>
+            }
+          </select>
+        </div>
+
+        <div class="form-group flex-1">
+          <label for="createDueDate" class="form-label">
+            Due Date (Optional)
+          </label>
+          <input
+            id="createDueDate"
+            type="date"
+            class="form-input"
+            [class.input-invalid]="dueDateTouched() && !isDueDateValid()"
+            [min]="todayString"
+            [value]="dueDate() ?? ''"
+            (input)="dueDate.set($any($event.target).value || null)"
+            (blur)="dueDateTouched.set(true)"
+          />
+          @if (dueDateTouched() && !isDueDateValid()) {
+            <span class="error-text">Due date cannot be in the past.</span>
+          }
+        </div>
+      </div>
+
+      <!-- Assignee -->
+      <div class="form-group">
+        <label for="createAssignee" class="form-label">Assignee (Optional)</label>
+        <select
+          id="createAssignee"
+          class="form-select"
+          [value]="assigneeId() ?? 'null'"
+          (change)="onAssigneeSelect($event)"
+        >
+          <option value="null">Unassigned</option>
+          @for (m of team(); track m.id) {
+            <option [value]="m.id">{{ m.name }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- Description -->
+      <div class="form-group">
+        <label for="createDescription" class="form-label">Description</label>
+        <textarea
+          id="createDescription"
+          class="form-textarea"
+          rows="3"
+          placeholder="Provide additional context or acceptance criteria..."
+          [value]="description()"
+          (input)="description.set($any($event.target).value)"
+        ></textarea>
+      </div>
+
+      <!-- Modal Footer -->
+      <footer class="modal-footer">
+        <button
+          type="button"
+          class="btn-cancel"
+          (click)="closeModal.emit()"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          class="btn-submit"
+          [disabled]="!isFormValid()"
+          title="Save is disabled while form is invalid"
+        >
+          Create Issue
+        </button>
+      </footer>
+    </form>
+  </div>
+</div>

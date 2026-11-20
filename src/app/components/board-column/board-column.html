@@ -1,0 +1,38 @@
+<section
+  class="board-column"
+  [class]="'status-' + status().toLowerCase().replace(' ', '-')"
+  [attr.aria-label]="status() + ' column'"
+>
+  <!-- Column Header -->
+  <header class="column-header">
+    <div class="header-title-row">
+      <span class="status-indicator"></span>
+      <h3 class="column-title">{{ status() }}</h3>
+      <span class="count-badge" [attr.aria-label]="issueCount() + ' issues'">
+        {{ issueCount() }}
+      </span>
+    </div>
+
+    <div class="header-points" title="Total Story Points in this column">
+      <span class="sp-label">Points:</span>
+      <span class="sp-val">{{ totalStoryPoints() }}</span>
+    </div>
+  </header>
+
+  <!-- Issues List -->
+  <div class="column-body">
+    @for (issue of issues(); track issue.id) {
+      <app-issue-card
+        [issue]="issue"
+        [teamMemberName]="getMemberName(issue.assigneeId)"
+        [isSelected]="issue.id === selectedIssueId()"
+        (cardClick)="issueSelect.emit($event)"
+      />
+    } @empty {
+      <div class="empty-column-state">
+        <span class="empty-icon">📭</span>
+        <p class="empty-text">No issues in {{ status() }}</p>
+      </div>
+    }
+  </div>
+</section>

@@ -1,0 +1,155 @@
+<div class="board-layout">
+  <!-- Top Summary Bar -->
+  <app-summary-bar
+    [totalIssues]="store.totalIssuesCount()"
+    [openIssues]="store.openIssuesCount()"
+    [overdueIssues]="store.overdueIssuesCount()"
+    [completionPercentage]="store.completionPercentage()"
+    [totalStoryPoints]="store.totalStoryPoints()"
+    [doneStoryPoints]="store.doneStoryPoints()"
+    (newIssueClick)="onOpenCreateModal()"
+    (resetDataClick)="onPromptReset()"
+  />
+
+  <!-- Secondary Filter Bar -->
+  <app-filter-bar
+    [team]="store.team()"
+    [searchQuery]="store.searchQuery()"
+    [assigneeFilter]="store.assigneeFilter()"
+    [priorityFilter]="store.priorityFilter()"
+    [filteredCount]="store.filteredCount()"
+    [totalCount]="store.totalIssuesCount()"
+    (searchChange)="onSearchChange($event)"
+    (assigneeChange)="onAssigneeChange($event)"
+    (priorityChange)="onPriorityChange($event)"
+    (clearFiltersClick)="onClearFilters()"
+  />
+
+  <!-- Global Interactive Toast Notification (Success / Error / Info) -->
+  @if (store.toast(); as activeToast) {
+    <div class="toast-notification-wrapper" [class]="'toast-' + activeToast.type" role="status" aria-live="polite">
+      <div class="toast-content">
+        <span class="toast-icon">
+          @if (activeToast.type === 'success') { ✓ }
+          @else if (activeToast.type === 'error') { ⚠️ }
+          @else { ℹ️ }
+        </span>
+        <span class="toast-message">{{ activeToast.message }}</span>
+      </div>
+      <button
+        type="button"
+        class="toast-dismiss-btn"
+        (click)="store.dismissToast()"
+        title="Dismiss notification"
+        aria-label="Dismiss notification"
+      >
+        ✕
+      </button>
+    </div>
+  }
+
+  <!-- Loading State (FR-6) -->
+  @if (store.isLoading() && store.issues().length === 0) {
+    <div class="loading-state-container">
+      <div class="spinner"></div>
+      <p class="loading-text">Loading issue tracker seed data...</p>
+    </div>
+  }
+
+  <!-- Error State (FR-6) -->
+  @if (store.loadError() && store.issues().length === 0) {
+    <div class="error-state-container" role="alert">
+      <span class="error-state-icon">⚠️</span>
+      <h3 class="error-state-title">Unable to Load Issues</h3>
+      <p class="error-state-text">{{ store.loadError() }}</p>
+      <button type="button" class="btn-retry" (click)="store.resetData()">Retry Loading</button>
+    </div>
+  }
+
+  <!-- Main Kanban Board Canvas -->
+  <main class="board-canvas">
+    <div class="columns-container" tabindex="0" role="region" aria-label="Kanban board columns">
+      <!-- 1. To Do Column -->
+      <app-board-column
+        status="To Do"
+        [issues]="store.todoIssues()"
+        [selectedIssueId]="store.selectedIssueId()"
+        [teamMemberLookup]="teamMemberLookup()"
+        (issueSelect)="onIssueSelected($event)"
+      />
+
+      <!-- 2. In Progress Column -->
+      <app-board-column
+        status="In Progress"
+        [issues]="store.inProgressIssues()"
+        [selectedIssueId]="store.selectedIssueId()"
+        [teamMemberLookup]="teamMemberLookup()"
+        (issueSelect)="onIssueSelected($event)"
+      />
+
+      <!-- 3. In Review Column -->
+      <app-board-column
+        status="In Review"
+        [issues]="store.inReviewIssues()"
+        [selectedIssueId]="store.selectedIssueId()"
+        [teamMemberLookup]="teamMemberLookup()"
+        (issueSelect)="onIssueSelected($event)"
+      />
+
+      <!-- 4. Done Column -->
+      <app-board-column
+        status="Done"
+        [issues]="store.doneIssues()"
+        [selectedIssueId]="store.selectedIssueId()"
+        [teamMemberLookup]="teamMemberLookup()"
+        (issueSelect)="onIssueSelected($event)"
+      />
+    </div>
+
+    <!-- Responsive Backdrop for Detail Panel on smaller viewports -->
+    @if (store.selectedIssue()) {
+      <div class="panel-backdrop" (click)="onCloseDetailPanel()" aria-hidden="true"></div>
+      <app-issue-detail-panel
+        [issue]="store.selectedIssue()!"
+        [team]="store.team()"
+        [ruleError]="store.ruleError()"
+        (closePanel)="onCloseDetailPanel()"
+        (statusChange)="onStatusChange($event)"
+        (saveDetails)="onSaveIssueDetails($event)"
+      />
+    }
+  </main>
+
+  <!-- Create Issue Modal (FR-5) -->
+  @if (store.isCreateModalOpen()) {
+    <app-issue-create-modal
+      [team]="store.team()"
+      [ruleError]="store.ruleError()"
+      (closeModal)="onCloseCreateModal()"
+      (createIssue)="onCreateIssue($event)"
+    />
+  }
+
+  <!-- Reset Data Confirmation Modal -->
+  @if (isResetConfirmOpen()) {
+    <div class="confirm-backdrop" (click)="onCancelReset()" role="dialog" aria-modal="true" aria-labelledby="resetTitle">
+      <div class="confirm-card" (click)="$event.stopPropagation()">
+        <div class="confirm-icon-wrap">
+          <span class="confirm-icon">⚠️</span>
+        </div>
+        <h3 id="resetTitle" class="confirm-title">Reset Workspace Data?</h3>
+        <p class="confirm-text">
+          This will permanently discard all your created issues, edits, and status changes, and restore the original 15 seed issues from <code>/issues.json</code>.
+        </p>
+        <div class="confirm-actions">
+          <button type="button" class="btn-cancel-modal" (click)="onCancelReset()">
+            Cancel
+          </button>
+          <button type="button" class="btn-confirm-reset" (click)="onConfirmReset()">
+            Confirm & Reset
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

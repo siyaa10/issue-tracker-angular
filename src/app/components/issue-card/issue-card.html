@@ -1,0 +1,56 @@
+<div
+  class="issue-card"
+  [class.selected]="isSelected()"
+  [class.has-overdue]="isOverdue()"
+  (click)="onCardClicked()"
+  (keydown)="onKeyDown($event)"
+  tabindex="0"
+  role="button"
+  [attr.aria-label]="'Issue ' + issue().id + ': ' + issue().title"
+>
+  <div class="card-header">
+    <span class="issue-id">{{ issue().id }}</span>
+    <div class="badge-group">
+      <span class="type-badge" [class]="'type-' + issue().type.toLowerCase()">
+        {{ issue().type }}
+      </span>
+      <span class="priority-badge" [class]="'priority-' + issue().priority.toLowerCase()">
+        {{ issue().priority }}
+      </span>
+    </div>
+  </div>
+
+  <h4 class="card-title">{{ issue().title }}</h4>
+
+  <div class="card-meta">
+    <div class="assignee-info">
+      <span class="avatar-initial">
+        {{ teamMemberName().charAt(0).toUpperCase() }}
+      </span>
+      <span class="assignee-name" [class.unassigned]="!issue().assigneeId">
+        {{ teamMemberName() }}
+      </span>
+    </div>
+
+    <div class="points-badge" title="Story Points">
+      <span class="points-icon">SP</span>
+      <span class="points-val">{{ issue().storyPoints }}</span>
+    </div>
+  </div>
+
+  <div class="card-footer">
+    <div class="due-info">
+      @if (issue().dueDate) {
+        <span class="due-date" [class.overdue-text]="isOverdue()">
+          📅 {{ issue().dueDate }}
+        </span>
+      } @else {
+        <span class="due-date no-due">No due date</span>
+      }
+    </div>
+
+    @if (isOverdue()) {
+      <span class="overdue-label">OVERDUE</span>
+    }
+  </div>
+</div>

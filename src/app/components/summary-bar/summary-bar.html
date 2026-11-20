@@ -1,0 +1,57 @@
+<header class="summary-bar">
+  <div class="brand-section">
+    <div class="logo-badge">
+      <span class="logo-icon">📋</span>
+    </div>
+    <div class="brand-text">
+      <h1 class="app-title">Issue Tracker</h1>
+      <span class="app-subtitle">Kanban Board & Sprint Flow</span>
+    </div>
+  </div>
+
+  <div class="metrics-section">
+    <div class="metric-card">
+      <span class="metric-label">Open Issues</span>
+      <span class="metric-value open-val">{{ openIssues() }}</span>
+      <span class="metric-sub">of {{ totalIssues() }} total</span>
+    </div>
+
+    <div class="metric-card" [class.has-overdue]="overdueIssues() > 0">
+      <span class="metric-label">Overdue</span>
+      <span class="metric-value overdue-val">{{ overdueIssues() }}</span>
+      <span class="metric-sub">Requires action</span>
+    </div>
+
+    <div class="metric-card progress-card">
+      <div class="metric-header-row">
+        <span class="metric-label">Completion</span>
+        <span class="metric-value completion-val">{{ completionPercentage() }}%</span>
+      </div>
+      <div class="progress-track" role="progressbar" [attr.aria-valuenow]="completionPercentage()" aria-valuemin="0" aria-valuemax="100">
+        <div class="progress-fill" [style.width.%]="completionPercentage()"></div>
+      </div>
+      <span class="metric-sub">{{ doneStoryPoints() }} / {{ totalStoryPoints() }} Story Points</span>
+    </div>
+  </div>
+
+  <div class="actions-section">
+    <button
+      type="button"
+      class="btn-reset"
+      (click)="resetDataClick.emit()"
+      title="Clear saved changes and reload seed data"
+    >
+      <span class="btn-icon">↺</span>
+      <span>Reset data</span>
+    </button>
+
+    <button
+      type="button"
+      class="btn-primary"
+      (click)="newIssueClick.emit()"
+    >
+      <span class="btn-icon">+</span>
+      <span>New issue</span>
+    </button>
+  </div>
+</header>

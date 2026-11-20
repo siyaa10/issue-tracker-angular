@@ -1,0 +1,167 @@
+[
+  {
+    "id": "TRK-101",
+    "title": "Fix memory leak in web socket listener",
+    "description": "WebSocket connection remains open after logout causing browser performance degradation.",
+    "type": "Bug",
+    "priority": "Critical",
+    "status": "To Do",
+    "assigneeId": null,
+    "storyPoints": 5,
+    "dueDate": "2026-11-12"
+  },
+  {
+    "id": "TRK-102",
+    "title": "Implement OAuth2 refresh token rotation",
+    "description": "Ensure tokens rotate securely and refresh tokens are invalidated upon logout.",
+    "type": "Story",
+    "priority": "High",
+    "status": "To Do",
+    "assigneeId": "tm-2",
+    "storyPoints": 8,
+    "dueDate": "2026-12-05"
+  },
+  {
+    "id": "TRK-103",
+    "title": "Migrate dashboard charts to SVG rendering",
+    "description": "Replace raster canvas charts with responsive SVG components for crisp display on high-DPI displays.",
+    "type": "Task",
+    "priority": "High",
+    "status": "In Progress",
+    "assigneeId": "tm-1",
+    "storyPoints": 3,
+    "dueDate": "2026-11-18"
+  },
+  {
+    "id": "TRK-104",
+    "title": "Optimize database queries on user profile load",
+    "description": "Profile screen issues N+1 query pattern when fetching user organizations and role permissions.",
+    "type": "Bug",
+    "priority": "Critical",
+    "status": "In Progress",
+    "assigneeId": "tm-1",
+    "storyPoints": 5,
+    "dueDate": "2026-11-25"
+  },
+  {
+    "id": "TRK-105",
+    "title": "Redesign notification bell dropdown menu",
+    "description": "Update UI to match latest design system specs including unread indicators and clear-all actions.",
+    "type": "Story",
+    "priority": "Medium",
+    "status": "In Progress",
+    "assigneeId": "tm-1",
+    "storyPoints": 2,
+    "dueDate": "2026-11-30"
+  },
+  {
+    "id": "TRK-106",
+    "title": "Add multi-language localization for Spanish and German",
+    "description": "Extract raw strings into translation bundles and support runtime locale switching.",
+    "type": "Story",
+    "priority": "Medium",
+    "status": "To Do",
+    "assigneeId": null,
+    "storyPoints": 5,
+    "dueDate": null
+  },
+  {
+    "id": "TRK-107",
+    "title": "Resolve session timeout modal clipping on mobile",
+    "description": "When viewport width is below 480px, the confirmation modal overflows and primary CTA is hidden.",
+    "type": "Bug",
+    "priority": "Low",
+    "status": "To Do",
+    "assigneeId": "tm-3",
+    "storyPoints": 1,
+    "dueDate": "2026-11-20"
+  },
+  {
+    "id": "TRK-108",
+    "title": "Implement CSV export for transaction logs",
+    "description": "Provide synchronous CSV download for filtered audit tables with proper sanitization.",
+    "type": "Task",
+    "priority": "Medium",
+    "status": "In Progress",
+    "assigneeId": "tm-2",
+    "storyPoints": 3,
+    "dueDate": "2026-12-10"
+  },
+  {
+    "id": "TRK-109",
+    "title": "Update password strength meter requirements",
+    "description": "Enforce minimum 12 characters and check against HaveIBeenPwned common passwords API.",
+    "type": "Task",
+    "priority": "High",
+    "status": "In Review",
+    "assigneeId": "tm-3",
+    "storyPoints": 2,
+    "dueDate": "2026-11-15"
+  },
+  {
+    "id": "TRK-110",
+    "title": "Configure Content Security Policy headers",
+    "description": "Lock down unsafe-inline scripts and restrict image sources to approved CDN domains.",
+    "type": "Task",
+    "priority": "Critical",
+    "status": "In Review",
+    "assigneeId": "tm-4",
+    "storyPoints": 3,
+    "dueDate": "2026-11-22"
+  },
+  {
+    "id": "TRK-111",
+    "title": "Automate end-to-end checkout smoke test suite",
+    "description": "Set up Playwright test workflow running nightly against staging environment.",
+    "type": "Story",
+    "priority": "Medium",
+    "status": "In Review",
+    "assigneeId": "tm-4",
+    "storyPoints": 8,
+    "dueDate": "2026-12-01"
+  },
+  {
+    "id": "TRK-112",
+    "title": "Fix broken image upload preview for PNG files",
+    "description": "FileReader fails on specific transparent PNG images due to incorrect MIME type detection.",
+    "type": "Bug",
+    "priority": "High",
+    "status": "To Do",
+    "assigneeId": "tm-2",
+    "storyPoints": 2,
+    "dueDate": "2026-11-10"
+  },
+  {
+    "id": "TRK-113",
+    "title": "Add keyboard accessibility shortcuts for table navigation",
+    "description": "Implement ARIA grid navigation with arrow keys and focus trapping on modals.",
+    "type": "Task",
+    "priority": "Low",
+    "status": "To Do",
+    "assigneeId": null,
+    "storyPoints": 3,
+    "dueDate": "2026-12-20"
+  },
+  {
+    "id": "TRK-114",
+    "title": "Upgrade build pipeline to Node 22 LTS",
+    "description": "Bump Docker base images and verify CI runner compatibility with updated dependencies.",
+    "type": "Task",
+    "priority": "Medium",
+    "status": "Done",
+    "assigneeId": "tm-2",
+    "storyPoints": 2,
+    "dueDate": "2026-11-01"
+  },
+  {
+    "id": "TRK-115",
+    "title": "Implement automated SSL certificate renewal",
+    "description": "Certbot cron job configured with Let's Encrypt and webhook alert on renewal failure.",
+    "type": "Story",
+    "priority": "Critical",
+    "status": "Done",
+    "assigneeId": "tm-3",
+    "storyPoints": 5,
+    "dueDate": "2026-11-05"
+  }
+]

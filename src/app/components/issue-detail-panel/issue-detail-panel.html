@@ -1,0 +1,227 @@
+<aside class="detail-panel" aria-label="Issue details">
+  <!-- Panel Header -->
+  <header class="panel-header">
+    <div class="panel-header-left">
+      <span class="issue-id-tag">{{ issue().id }}</span>
+      <span class="type-pill" [class]="'type-' + issue().type.toLowerCase()">
+        {{ issue().type }}
+      </span>
+      <span class="status-pill" [class]="'status-' + issue().status.toLowerCase().replace(' ', '-')">
+        {{ issue().status }}
+      </span>
+    </div>
+
+    <button
+      type="button"
+      class="close-btn"
+      (click)="closePanel.emit()"
+      title="Close detail panel"
+      aria-label="Close detail panel"
+    >
+      ✕
+    </button>
+  </header>
+
+  <!-- Business Rule Error Banner -->
+  @if (ruleError() || localFormError()) {
+    <div class="error-banner" role="alert">
+      <span class="error-icon">⚠️</span>
+      <span class="error-text">{{ localFormError() || ruleError() }}</span>
+    </div>
+  }
+
+  <!-- Panel Body -->
+  <div class="panel-body">
+    <!-- View Mode -->
+    @if (!isEditing()) {
+      <div class="view-mode">
+        <h2 class="issue-title">{{ issue().title }}</h2>
+
+        <!-- Status Transitions Section (FR-4 & BR-1) -->
+        <div class="field-card transitions-card">
+          <span class="field-label">Workflow Actions (BR-1):</span>
+          <div class="transition-buttons">
+            @for (nextStatus of allowedTransitions(); track nextStatus) {
+              <button
+                type="button"
+                class="btn-transition"
+                [class]="'btn-move-' + nextStatus.toLowerCase().replace(' ', '-')"
+                (click)="onStatusClick(nextStatus)"
+              >
+                Move to {{ nextStatus }}
+                @if (issue().status === 'Done' && nextStatus === 'To Do') {
+                  (Reopen)
+                }
+              </button>
+            } @empty {
+              <span class="no-transitions">No moves available from current status</span>
+            }
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div class="field-card">
+          <span class="field-label">Description:</span>
+          <p class="issue-description">
+            {{ issue().description || 'No description provided.' }}
+          </p>
+        </div>
+
+        <!-- Meta Grid -->
+        <div class="meta-grid">
+          <div class="meta-item">
+            <span class="meta-label">Priority</span>
+            <span class="priority-badge" [class]="'priority-' + issue().priority.toLowerCase()">
+              {{ issue().priority }}
+            </span>
+          </div>
+
+          <div class="meta-item">
+            <span class="meta-label">Story Points</span>
+            <span class="sp-badge">{{ issue().storyPoints }} Points</span>
+          </div>
+
+          <div class="meta-item">
+            <span class="meta-label">Assignee</span>
+            <div class="assignee-display">
+              <span class="avatar-initial">{{ assigneeName().charAt(0).toUpperCase() }}</span>
+              <span class="assignee-text" [class.unassigned]="!issue().assigneeId">
+                {{ assigneeName() }}
+              </span>
+            </div>
+          </div>
+
+          <div class="meta-item">
+            <span class="meta-label">Due Date</span>
+            <div class="due-display">
+              @if (issue().dueDate) {
+                <span [class.overdue-text]="isOverdue()">
+                  📅 {{ issue().dueDate }}
+                </span>
+                @if (isOverdue()) {
+                  <span class="overdue-tag">OVERDUE</span>
+                }
+              } @else {
+                <span class="no-date">None</span>
+              }
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-footer-actions">
+          <button
+            type="button"
+            class="btn-edit"
+            (click)="startEditing()"
+          >
+            ✏️ Edit Issue Details
+          </button>
+        </div>
+      </div>
+    } @else {
+      <!-- Edit Mode (FR-4) -->
+      <form class="edit-mode" (ngSubmit)="onSave()">
+        <div class="form-group">
+          <label for="editTitleInput" class="form-label">
+            Title <span class="required-star">*</span>
+          </label>
+          <input
+            id="editTitleInput"
+            type="text"
+            class="form-input"
+            [value]="editTitle()"
+            (input)="editTitle.set($any($event.target).value)"
+            required
+            minlength="5"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="editPrioritySelect" class="form-label">Priority</label>
+          <select
+            id="editPrioritySelect"
+            class="form-select"
+            [value]="editPriority()"
+            (change)="editPriority.set($any($event.target).value)"
+          >
+            @for (p of priorities; track p) {
+              <option [value]="p">{{ p }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="editAssigneeSelect" class="form-label">Assignee</label>
+          <select
+            id="editAssigneeSelect"
+            class="form-select"
+            [value]="editAssigneeId() ?? 'null'"
+            (change)="onAssigneeSelect($event)"
+          >
+            <option value="null">Unassigned</option>
+            @for (m of team(); track m.id) {
+              <option [value]="m.id">{{ m.name }}</option>
+            }
+          </select>
+          @if (issue().status === 'In Progress') {
+            <span class="form-help-text info-hint">
+              ℹ️ Note (BR-2): An issue that is In Progress cannot be unassigned.
+            </span>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="editStoryPointsSelect" class="form-label">Story Points</label>
+          <select
+            id="editStoryPointsSelect"
+            class="form-select"
+            [value]="editStoryPoints()"
+            (change)="onStoryPointsSelect($event)"
+          >
+            @for (sp of storyPointsOptions; track sp) {
+              <option [value]="sp">{{ sp }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="editDueDateInput" class="form-label">Due Date</label>
+          <input
+            id="editDueDateInput"
+            type="date"
+            class="form-input"
+            [value]="editDueDate() ?? ''"
+            (input)="editDueDate.set($any($event.target).value || null)"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="editDescTextarea" class="form-label">Description</label>
+          <textarea
+            id="editDescTextarea"
+            class="form-textarea"
+            rows="3"
+            [value]="editDescription()"
+            (input)="editDescription.set($any($event.target).value)"
+          ></textarea>
+        </div>
+
+        <div class="edit-actions">
+          <button
+            type="button"
+            class="btn-cancel"
+            (click)="cancelEditing()"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="btn-save"
+          >
+            Save Changes
+          </button>
+        </div>
+      </form>
+    }
+  </div>
+</aside>

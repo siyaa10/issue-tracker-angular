@@ -1,0 +1,80 @@
+<div class="filter-bar">
+  <div class="filter-controls">
+    <!-- Search Input -->
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input
+        #searchInput
+        type="text"
+        placeholder="Search title or ID (e.g. TRK-101)..."
+        [value]="searchQuery()"
+        (input)="onSearchInput($event)"
+        class="search-input"
+        aria-label="Search issues by title or ID"
+      />
+      @if (searchQuery()) {
+        <button
+          type="button"
+          class="clear-search-btn"
+          (click)="clearSearch(searchInput)"
+          title="Clear search"
+          aria-label="Clear search"
+        >
+          ✕
+        </button>
+      }
+    </div>
+
+    <!-- Assignee Filter -->
+    <div class="filter-group">
+      <label for="assigneeFilterSelect" class="filter-label">Assignee:</label>
+      <select
+        id="assigneeFilterSelect"
+        class="filter-select"
+        [value]="assigneeFilter()"
+        (change)="onAssigneeSelect($event)"
+        aria-label="Filter by assignee"
+      >
+        <option value="All">All Assignees</option>
+        <option value="Unassigned">Unassigned</option>
+        @for (member of team(); track member.id) {
+          <option [value]="member.id">{{ member.name }}</option>
+        }
+      </select>
+    </div>
+
+    <!-- Priority Filter -->
+    <div class="filter-group">
+      <label for="priorityFilterSelect" class="filter-label">Priority:</label>
+      <select
+        id="priorityFilterSelect"
+        class="filter-select"
+        [value]="priorityFilter()"
+        (change)="onPrioritySelect($event)"
+        aria-label="Filter by priority"
+      >
+        <option value="All">All Priorities</option>
+        @for (p of priorities; track p) {
+          <option [value]="p">{{ p }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  <div class="filter-status-section">
+    <span class="issue-counter">
+      Showing <strong>{{ filteredCount() }}</strong> of <strong>{{ totalCount() }}</strong> issues
+    </span>
+
+    @if (isFiltered) {
+      <button
+        type="button"
+        class="btn-clear-filters"
+        (click)="clearFiltersClick.emit()"
+      >
+        <span>Clear filters</span>
+        <span class="clear-icon">✕</span>
+      </button>
+    }
+  </div>
+</div>
